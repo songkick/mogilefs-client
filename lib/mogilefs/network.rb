@@ -57,9 +57,11 @@ module MogileFS::Network
 
         r[1].each do |sock|
           begin
-            # we don't about short/interrupted writes here, if the following
-            # request fails or blocks then the server is flat-out hopeless
-            sock.syswrite "HEAD #{uri_socks[sock].request_uri} HTTP/1.0\r\n\r\n"
+            # we don't care about short/interrupted writes here, if the
+            # following request fails or blocks then the server is
+            # flat-out hopeless
+            sock.write_nonblock(
+              "HEAD #{uri_socks[sock].request_uri} HTTP/1.0\r\n\r\n")
             sockets << sock
           rescue
             sock.close rescue nil
