@@ -145,6 +145,18 @@ class TestMogileFS__MogileFS < TestMogileFS
     assert_equal expected, @client.get_paths('key').sort
   end
 
+  def test_get_uris
+    path1 = 'http://rur-1/dev1/0/000/000/0000000062.fid'
+    path2 = 'http://rur-2/dev2/0/000/000/0000000062.fid'
+
+    @backend.get_paths = { 'paths' => 2, 'path1' => path1, 'path2' => path2 }
+
+    expected = [ URI.parse(path1), URI.parse(path2) ]
+
+    assert_equal expected, @client.get_uris('key')
+  end
+
+
   def test_get_paths_unknown_key
     @backend.get_paths = ['unknown_key', '']
 

@@ -86,6 +86,13 @@ class MogileFS::MogileFS < MogileFS::Client
   end
 
   ##
+  # Get the URIs for +key+.
+
+  def get_uris(key, noverify = true, zone = nil)
+    get_paths(key, noverify, zone).map { |path| URI.parse(path) }
+  end
+
+  ##
   # Creates a new file +key+ in +klass+.  +bytes+ is currently unused.
   #
   # The +block+ operates like File.open.
