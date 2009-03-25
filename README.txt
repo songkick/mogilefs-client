@@ -19,13 +19,15 @@ he finds web interfaces difficult to use.
 
 Source repository (git):
 
-git://git.bogomips.org/mogilefs-client.git
+  git://git.bogomips.org/mogilefs-client.git
+  http://git.bogomips.org/mogilefs-client.git
+  git://repo.or.cz/ruby-mogilefs-client.git (mirror)
+  http://repo.or.cz/r/ruby-mogilefs-client.git (mirror)
 
-http://git.bogomips.org/mogilefs-client.git
+Repository browsers:
 
-Repository browser (cgit):
-
-http://git.bogomips.org/cgit/mogilefs-client.git
+* http://git.bogomips.org/cgit/mogilefs-client.git (cgit)
+* http://repo.or.cz/w/ruby-mogilefs-client.git (gitweb mirror)
 
 == About
 
