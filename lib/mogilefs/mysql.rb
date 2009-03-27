@@ -101,7 +101,7 @@ class MogileFS::Mysql
         devices = refresh_device(true)
         devinfo = devices[devid.to_i] or next
       end
-
+      devinfo[:readable] or next
       port = devinfo[:http_get_port]
       host = zone && zone == 'alt' ? devinfo[:altip] : devinfo[:hostip]
       nfid = '%010u' % fid
@@ -120,10 +120,10 @@ class MogileFS::Mysql
       GET_DOMAINS = 'SELECT dmid,namespace FROM domain'.freeze
 
       GET_DEVICES = <<-EOS
-        SELECT d.devid, h.hostip, h.altip, h.http_port, h.http_get_port
+        SELECT d.devid, h.hostip, h.altip, h.http_port, h.http_get_port,
+          d.status, h.status
         FROM device d
           LEFT JOIN host h ON d.hostid = h.hostid
-        WHERE d.status IN ('alive','readonly','drain');
       EOS
       GET_DEVICES.freeze
     end
@@ -132,15 +132,24 @@ class MogileFS::Mysql
       @my.send(@query_method, sql)
     end
 
+    DEV_STATUS_READABLE = {
+      "alive" => true,
+      "readonly" => true,
+      "drain" => true,
+    }.freeze
+
     def refresh_device(force = false)
       return @cache_device if ! force && ((Time.now - @last_update_device) < 60)
       tmp = {}
       res = query(GET_DEVICES)
-      res.each do |devid, hostip, altip, http_port, http_get_port|
+      res.each do |devid, hostip, altip, http_port, http_get_port,
+                   dev_status, host_status|
         http_port = http_port ? http_port.to_i : 80
         tmp[devid.to_i] = {
           :hostip => hostip.freeze,
           :altip => (altip || hostip).freeze,
+          :readable => (host_status == "alive" &&
+                        DEV_STATUS_READABLE.include?(dev_status)),
           :http_port => http_port,
           :http_get_port => http_get_port ?  http_get_port.to_i : http_port,
         }.freeze

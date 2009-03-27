@@ -109,11 +109,13 @@ end
 class FakeMysql
   attr_reader :expect
   TBL_DEVICES = [
-    # devid, hostip,    altip,         http_port, http_get_port
-    [ 1,    '10.0.0.1', '192.168.0.1', 7500,      7600 ],
-    [ 2,    '10.0.0.2', '192.168.0.2', 7500,      7600 ],
-    [ 3,    '10.0.0.3', nil,           7500,      nil ],
-    [ 4,    '10.0.0.4', nil,           7500,      nil ],
+    # devid, hostip, altip, http_port, http_get_port, dev status, host status
+    [ 1, '10.0.0.1', '192.168.0.1', 7500, 7600, 'readonly', 'alive' ],
+    [ 2, '10.0.0.2', '192.168.0.2', 7500, 7600, 'alive', 'alive' ],
+    [ 3, '10.0.0.3', nil, 7500, nil, 'readonly', 'alive' ],
+    [ 4, '10.0.0.4', nil, 7500, nil, 'alive', 'alive' ],
+    [ 5, '10.0.0.5', nil, 7500, nil, 'dead', 'alive' ],
+    [ 6, '10.0.0.6', nil, 7500, nil, 'alive', 'down' ],
   ]
   TBL_DOMAINS = [
     # dmid, namespace

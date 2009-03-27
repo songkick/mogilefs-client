@@ -20,22 +20,38 @@ class TestMogileFS__Mysql < Test::Unit::TestCase
       {:hostip=>"10.0.0.1",
        :http_get_port=>7600,
        :http_port=>7500,
+       :readable=>true,
        :altip=>"192.168.0.1"},
      2=>
       {:hostip=>"10.0.0.2",
        :http_get_port=>7600,
        :http_port=>7500,
+       :readable=>true,
        :altip=>"192.168.0.2"},
      3=>
       {:hostip=>"10.0.0.3",
        :http_get_port=>7500,
        :http_port=>7500,
+       :readable=>true,
        :altip=>"10.0.0.3"},
      4=>
       {:hostip=>"10.0.0.4",
        :http_get_port=>7500,
        :http_port=>7500,
-       :altip=>"10.0.0.4"}
+       :readable=>true,
+       :altip=>"10.0.0.4"},
+     5=>
+      {:hostip=>"10.0.0.5",
+       :http_get_port=>7500,
+       :http_port=>7500,
+       :readable=>false,
+       :altip=>"10.0.0.5"},
+     6=>
+      {:hostip=>"10.0.0.6",
+       :http_get_port=>7500,
+       :http_port=>7500,
+       :readable=>false,
+       :altip=>"10.0.0.6"}
     }
     assert_equal expect, @mg.refresh_device
   end
@@ -50,6 +66,20 @@ class TestMogileFS__Mysql < Test::Unit::TestCase
     @my.expect << [ [ 1 ], [ 3 ] ] # devids
     expect = [ "http://10.0.0.1:7600/dev1/0/000/000/0000000012.fid",
                "http://10.0.0.3:7500/dev3/0/000/000/0000000012.fid" ]
+    assert_equal expect, @mg._get_paths(:domain => 'test', :key => 'fookey')
+  end
+
+  def test_get_paths_bad_device
+    @my.expect << [ [ 12 ] ] # fid
+    @my.expect << [ [ 1 ], [ 6 ] ] # devids
+    expect = [ "http://10.0.0.1:7600/dev1/0/000/000/0000000012.fid" ]
+    assert_equal expect, @mg._get_paths(:domain => 'test', :key => 'fookey')
+  end
+
+  def test_get_paths_bad_host
+    @my.expect << [ [ 12 ] ] # fid
+    @my.expect << [ [ 1 ], [ 5 ] ] # devids
+    expect = [ "http://10.0.0.1:7600/dev1/0/000/000/0000000012.fid" ]
     assert_equal expect, @mg._get_paths(:domain => 'test', :key => 'fookey')
   end
 
