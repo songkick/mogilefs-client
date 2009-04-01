@@ -186,7 +186,6 @@ begin
     cfg[:class] or raise ArgumentError, 'E: --class must be specified'
     buf = ''
     tmp = Tempfile.new('mog-tee') # TODO: explore Transfer-Encoding:chunked :)
-    at_exit { tmp.unlink }
 
     # if stdout is pointing to /dev/null, don't bother installing the filter.
     STDOUT.sync = true
@@ -196,7 +195,7 @@ begin
       sysrwloop(STDIN, tmp, tee_filter)
       store_file_retry(mg, key, cfg[:class], tmp.path)
     ensure
-      tmp.close
+      tmp.close!
     end
   when 'test'
     truth, ok = true, nil
