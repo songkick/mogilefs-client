@@ -131,20 +131,22 @@ class MogileFS::MogileFS < MogileFS::Client
 
   ##
   # Copies the contents of +file+ into +key+ in class +klass+.  +file+ can be
-  # either a file name or an object that responds to #read.
+  # either a file name or an object that responds to #sysread.
+  # Returns size of +file+ stored
 
   def store_file(key, klass, file)
     raise MogileFS::ReadOnlyError if readonly?
 
     new_file key, klass do |mfp|
       if file.respond_to? :sysread then
-        return sysrwloop(file, mfp)
+        sysrwloop(file, mfp)
       else
-	if File.size(file) > 0x10000 # Bigass file, handle differently
-	  mfp.big_io = file
-	  return
-	else
-          return File.open(file, "rb") { |fp| sysrwloop(fp, mfp) }
+        size = File.size(file)
+        if size > 0x10000 # Bigass file, handle differently
+          mfp.big_io = file
+          size
+        else
+          File.open(file, "rb") { |fp| sysrwloop(fp, mfp) }
         end
       end
     end

@@ -295,6 +295,32 @@ class TestMogileFS__MogileFS < TestMogileFS
     assert_equal 1, tmp.stat.size
   end
 
+  def test_store_file_small_http
+    received = Tempfile.new('received')
+    to_store = Tempfile.new('small')
+    to_store.syswrite('data')
+
+    expected = "PUT /path HTTP/1.0\r\nContent-Length: 4\r\n\r\ndata"
+    t = TempServer.new(Proc.new do |serv, accept|
+      client, client_addr = serv.accept
+      client.sync = true
+      received.syswrite(client.recv(4096, 0))
+      client.send("HTTP/1.0 200 OK\r\n\r\n", 0)
+      client.close
+    end)
+
+    @backend.create_open = {
+      'devid' => '1',
+      'path' => "http://127.0.0.1:#{t.port}/path",
+    }
+    nr = @client.store_file 'new_key', 'test', to_store.path
+    assert_equal 4, nr
+    received.sysseek(0)
+    assert_equal expected, received.sysread(4096)
+    ensure
+      TempServer.destroy_all!
+  end
+
   def test_store_content_http
     received = Tempfile.new('recieved')
     expected = "PUT /path HTTP/1.0\r\nContent-Length: 4\r\n\r\ndata"
@@ -312,7 +338,9 @@ class TestMogileFS__MogileFS < TestMogileFS
       'path' => "http://127.0.0.1:#{t.port}/path",
     }
 
-    @client.store_content 'new_key', 'test', 'data'
+    nr = @client.store_content 'new_key', 'test', 'data'
+    assert nr
+    assert_equal 4, nr
 
     received.sysseek(0)
     assert_equal expected, received.sysread(4096)
@@ -352,7 +380,9 @@ class TestMogileFS__MogileFS < TestMogileFS
         write_callback.call("data")
       end
     end
-    @client.store_content('new_key', 'test', cbk)
+    assert_equal 40, cbk.length
+    nr = @client.store_content('new_key', 'test', cbk)
+    assert_equal 40, nr
 
     received.sysseek(0)
     assert_equal expected, received.sysread(4096)
@@ -389,7 +419,8 @@ class TestMogileFS__MogileFS < TestMogileFS
       'path_2' => "http://127.0.0.1:#{t2.port}/path",
     }
 
-    @client.store_content 'new_key', 'test', 'data'
+    nr = @client.store_content 'new_key', 'test', 'data'
+    assert_equal 4, nr
     received1.sysseek(0)
     received2.sysseek(0)
     assert_equal expected, received1.sysread(4096)
@@ -433,7 +464,8 @@ class TestMogileFS__MogileFS < TestMogileFS
       'path' => "http://127.0.0.1:#{t.port}/path",
     }
 
-    @client.store_content 'new_key', 'test', ''
+    nr = @client.store_content 'new_key', 'test', ''
+    assert_equal 0, nr
     received.sysseek(0)
     assert_equal expected, received.sysread(4096)
   end
@@ -490,7 +522,11 @@ class TestMogileFS__MogileFS < TestMogileFS
       'path' => "http://127.0.0.1:#{t.port}/path",
     }
 
-    @client.store_file('new_key', 'test', to_put.path)
+    orig_size = to_put.size
+    nr = @client.store_file('new_key', 'test', to_put.path)
+    assert nr
+    assert_equal orig_size, nr
+    assert_equal orig_size, to_put.size
     readed.sysseek(0)
     assert_equal expect.stat.size, readed.sysread(4096).to_i
 
