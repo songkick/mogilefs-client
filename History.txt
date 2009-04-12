@@ -1,3 +1,12 @@
+= 2.1.0
+* MySQL interface returns integer length and devcount (API change)
+* Ensure store_{content,file} always returns size (API fix)
+* Add get_uris API method
+* Respect timeout when doing get_file_data
+* MySQL interface filters out URLs for down/dead hosts/devices
+* Really remove all NFS support
+* get_file in slurp mode slurps all output correctly
+
 = 2.0.2
 * README.txt: update documentation URL
 * backend: raise exceptions with the error message
