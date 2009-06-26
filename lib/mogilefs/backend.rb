@@ -168,7 +168,7 @@ class MogileFS::Backend
 
       readable?
 
-      parse_response(socket.gets)
+      parse_response(socket.gets("\n"))
     end
   end
 
@@ -192,7 +192,7 @@ class MogileFS::Backend
   # error, or raises, as appropriate.
 
   def parse_response(line)
-    if line =~ /^ERR\s+(\w+)\s*(.*)/ then
+    if line =~ /^ERR\s+(\w+)\s*([^\r\n]*)/
       @lasterr = $1
       @lasterrstr = $2 ? url_unescape($2) : nil
       raise error(@lasterr), @lasterrstr

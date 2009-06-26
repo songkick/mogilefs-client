@@ -127,6 +127,18 @@ class TestBackend < Test::Unit::TestCase
     end
   end
 
+  def test_parse_response_newline
+    begin
+      @backend.parse_response("ERR you totally suck\r\n")
+    rescue MogileFS::Error => err
+      assert_equal 'MogileFS::Backend::YouError', err.class.to_s
+      assert_equal 'totally suck', err.message
+    end
+
+    assert_equal 'you', @backend.lasterr
+    assert_equal 'totally suck', @backend.lasterrstr
+  end
+
   def test_readable_eh_readable
     accept = Tempfile.new('accept')
     tmp = TempServer.new(Proc.new do |serv, port|
