@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 require 'mogilefs'
 require 'mogilefs/util'
 require 'thread'

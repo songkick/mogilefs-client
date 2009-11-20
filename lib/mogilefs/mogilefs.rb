@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 require 'mogilefs/client'
 require 'mogilefs/util'
 

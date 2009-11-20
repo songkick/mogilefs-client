@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 ##
 # MogileFS is a Ruby client for Danga Interactive's open source distributed
 # filesystem.

@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 require 'stringio'
 require 'uri'
 require 'mogilefs/backend'

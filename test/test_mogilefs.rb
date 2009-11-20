@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 require 'test/setup'
 require 'stringio'
 require 'tempfile'

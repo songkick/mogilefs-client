@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 require 'zlib'
 require 'digest/md5'
 require 'uri'

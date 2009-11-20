@@ -1,3 +1,4 @@
+# -*- encoding: binary -*-
 STDIN.sync = STDOUT.sync = STDERR.sync = true
 require 'test/unit'
 require 'tempfile'
