@@ -148,7 +148,6 @@ class Socket
     # connection
     def mogilefs_new_nonblock(host, port)
       sock = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
-      sock.sync = true
       if defined?(Socket::TCP_NODELAY)
         sock.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
       end

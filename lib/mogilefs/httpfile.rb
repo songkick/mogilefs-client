@@ -103,7 +103,6 @@ class MogileFS::HTTPFile < StringIO
       # Don't try to run out of memory
       File.open(@big_io, "rb") do |fp|
         file_size = fp.stat.size
-        fp.sync = true
         syswrite_full(sock, "PUT #{uri.request_uri} HTTP/1.0\r\n" \
                             "Content-Length: #{file_size}\r\n\r\n")
         sysrwloop(fp, sock)
