@@ -90,7 +90,6 @@ class MogileFS::HTTPFile < StringIO
   def upload(devid, uri)
     file_size = length
     sock = Socket.mogilefs_new(uri.host, uri.port)
-    sock.mogilefs_tcp_cork = true
 
     if @streaming_io
       file_size = @streaming_io.length
@@ -111,7 +110,6 @@ class MogileFS::HTTPFile < StringIO
       syswrite_full(sock, "PUT #{uri.request_uri} HTTP/1.0\r\n" \
                           "Content-Length: #{length}\r\n\r\n#{string}")
     end
-    sock.mogilefs_tcp_cork = false
 
     line = sock.gets or
       raise EmptyResponseError, 'Unable to read response line from server'

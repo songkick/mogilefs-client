@@ -113,15 +113,6 @@ class MogileFS::Timeout < Timeout::Error; end
 class Socket
   attr_accessor :mogilefs_addr, :mogilefs_connected, :mogilefs_size
 
-  TCP_CORK = 3 if ! defined?(TCP_CORK) && RUBY_PLATFORM =~ /linux/
-
-  def mogilefs_tcp_cork=(set)
-    if defined?(TCP_CORK)
-      self.setsockopt(SOL_TCP, TCP_CORK, set ? 1 : 0) rescue nil
-    end
-    set
-  end
-
   # Socket lacks peeraddr method of the IPSocket/TCPSocket classes
   def mogilefs_peername
     Socket.unpack_sockaddr_in(getpeername).reverse.map {|x| x.to_s }.join(':')
