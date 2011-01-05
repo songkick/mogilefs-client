@@ -168,7 +168,14 @@ class MogileFS::Backend
 
       readable?
 
-      parse_response(socket.gets)
+      begin
+        response = socket.gets
+      rescue SystemCallError
+        shutdown
+        raise MogileFS::UnreachableBackendError
+      end
+
+      parse_response(response)
     end
   end
 

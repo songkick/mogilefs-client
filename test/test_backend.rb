@@ -68,6 +68,23 @@ class TestBackend < Test::Unit::TestCase
     assert_equal nil, @backend.instance_variable_get('@socket')
   end
 
+  def test_do_request_receive_error
+    socket_request = ''
+    socket = Object.new
+    def socket.closed?() false end
+    def socket.send(request, flags) request.size end
+    def socket.gets() raise SystemCallError, 'dummy' end
+
+    @backend.instance_variable_set '@socket', socket
+    def @backend.readable?() true end
+
+    assert_raises MogileFS::UnreachableBackendError do
+      @backend.do_request 'go!', { 'fight' => 'team fight!' }
+    end
+
+    assert_equal nil, @backend.instance_variable_get('@socket')
+  end
+
   def test_automatic_exception
     assert ! MogileFS::Backend.const_defined?('PebkacError')
     assert @backend.error('pebkac')
@@ -100,7 +117,7 @@ class TestBackend < Test::Unit::TestCase
       @backend.do_request 'go!', { 'fight' => 'team fight!' }
     end
   end
-
+  
   def test_make_request
     assert_equal "go! fight=team+fight%21\r\n",
                  @backend.make_request('go!', { 'fight' => 'team fight!' })
