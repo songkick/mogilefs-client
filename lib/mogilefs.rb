@@ -6,7 +6,7 @@
 
 module MogileFS
 
-  VERSION = '2.1.0'.freeze
+  VERSION = '2.1.1'.freeze
 
   ##
   # Raised when a socket remains unreadable for too long.
